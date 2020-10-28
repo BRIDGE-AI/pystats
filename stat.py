@@ -1,27 +1,41 @@
 # -*- coding: utf-8 -*-
 
 def generate_data(fname):
-    labels = ["#No", "Name", "Score", "ETC."]
+    import random
 
-    conv = []
+    labels = ["No", "Name", "Score", "ETC."]
+
+    rows = []
     for idx in range(10):
         cols = []
         for jdx in range(len(labels)):
-            if jdx != 2:
-                col = "%s%d" % (labels[jdx].strip("#").lower(), idx + 1)
+            if jdx == 0:
+                col = "%s%d" % (labels[jdx].lower(), idx + 1)
+            elif jdx == 1:
+                col = "%s%d" % (labels[jdx].upper(), idx + 1)
+            elif jdx == 2:
+                col = str(random.choice([1, 2, 3, 4, 5]))
             else:
-                # str, float, list, dict
-                col = str(idx + 1)
+                col = "_"
             cols.append(col)
 
-        # x = ["a", "b", "c"]
-        # " ".join(x) --> "a b c"
-        # "\t".join(x) --> "a\tb\tc" --> "a    b   c"
-        conv.append("\t".join(cols))
+        rows.append("\t".join(cols))
 
-    open(fname, "w").write("\n".join(conv))
+    open(fname, "w").write("\n".join(rows))
 
     return 0
+
+def calc_avg(text):
+    lines = text.split("\n")
+
+    _sum = 0
+    for line in lines:
+        tabs = line.split("\t")
+        _sum += int(tabs[2]) # _sum = _sum + int(..)
+
+    count = len(lines)
+
+    print("sum[%d]:%d, avg:%.2f" % (count, _sum, _sum / count))
 
 def main():
     fname = "data.txt"
@@ -30,6 +44,9 @@ def main():
 
     text = open(fname).read()
     print(text)
+
+    #avg : 3.0
+    calc_avg(text)
 
 main()
 
