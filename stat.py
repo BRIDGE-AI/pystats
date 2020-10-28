@@ -34,8 +34,15 @@ def calc_avg(text):
         _sum += int(tabs[2]) # _sum = _sum + int(..)
 
     count = len(lines)
+    avg = _sum / count
+    s = "sum[%d]:%d, avg:%.2f" % (count, _sum, avg)
+    print(s)
 
-    print("sum[%d]:%d, avg:%.2f" % (count, _sum, _sum / count))
+def calc_x(text):
+    pass
+
+def calc_y(text):
+    pass
 
 def main():
     fname = "data.txt"
@@ -47,6 +54,8 @@ def main():
 
     #avg : 3.0
     calc_avg(text)
+    calc_x(text)
+    calc_y(text)
 
 main()
 
