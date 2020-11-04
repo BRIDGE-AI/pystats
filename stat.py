@@ -38,10 +38,26 @@ def calc_avg(text):
     s = "sum[%d]:%d, avg:%.2f" % (count, _sum, avg)
     print(s)
 
-def calc_x(text):
-    pass
+def calc_var(text):
+    import math
 
-def calc_y(text):
+    lines = text.split("\n")
+
+    _sum = 0
+    _sum2 = 0
+    for line in lines:
+        tabs = line.split("\t")
+        x = int(tabs[2])
+        _sum += x
+        _sum2 += x ** 2
+
+    count = len(lines)
+    avg = _sum / count
+
+    var = _sum2 / len(lines) - avg ** 2
+    print("sum[%d]:%d, avg:%.2f, var:%.2f, dev:%.2f, dev2:%.2f" % (count, _sum, avg, var, math.sqrt(var), var ** 0.5))
+
+def calc_dev(text):
     pass
 
 def main():
@@ -54,8 +70,8 @@ def main():
 
     #avg : 3.0
     calc_avg(text)
-    calc_x(text)
-    calc_y(text)
+    calc_var(text)
+    #calc_y(text)
 
 main()
 
