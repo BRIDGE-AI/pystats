@@ -25,29 +25,9 @@ def generate_data(fname):
 
     return 0
 
-def calc_avg(nums):
-    _sum = 0
-    for num in nums:
-        _sum += num
-
-    count = len(nums)
-    avg = _sum / count
-    #s = "sum[%d]:%d, avg:%.2f" % (count, _sum, avg)
-    #print(s)
-    return count, _sum, avg
-
-def calc_var(count, avg, nums):
+def main():
     import math
 
-    _sum2 = 0
-    for num in nums:
-        _sum2 += num ** 2
-
-    var = _sum2 / count - avg ** 2
-    dev = math.sqrt(var)
-    return var, dev
-
-def main():
     fname = "data.txt"
 
     generate_data(fname)
@@ -55,14 +35,16 @@ def main():
     text = open(fname).read()
     print(text)
 
-    lines = text.split("\n")
-    nums = []
-    for line in lines:
-        x = int(line.split("\t")[2])
-        nums.append(x)
+    nums = [int(line.split("\t")[2]) for line in text.split("\n")]
+    _sum = sum(nums)
+    count = len(nums)
+    avg = _sum / count
 
-    count, _sum, avg = calc_avg(nums)
-    var, dev = calc_var(count, avg, nums)
+    _sum2 = sum([num ** 2 for num in nums])
+    var = _sum2 / count - avg ** 2
+    dev = math.sqrt(var)
+
+    #var, dev = calc_var(count, avg, nums)
 
     print("sum[%d]:%d, avg:%.2f, var:%.2f, dev:%.2f" % (count, _sum, avg, var, dev))
 
