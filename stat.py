@@ -1,54 +1,45 @@
 # -*- coding: utf-8 -*-
 
+MaxItems = 10000
+
 def generate_data(fname):
     import random
+    import json
 
     labels = ["No", "Name", "Score", "ETC."]
 
-    rows = []
-    for idx in range(10):
-        cols = []
+    datalist = []
+    for idx in range(MaxItems):
+        item = {}
         for jdx in range(len(labels)):
             if jdx == 0:
-                col = "%s%d" % (labels[jdx].lower(), idx + 1)
+                item["no"] = "%s%d" % (labels[jdx].lower(), idx + 1)
             elif jdx == 1:
-                col = "%s%d" % (labels[jdx].upper(), idx + 1)
+                item["name"] = "%s%d" % (labels[jdx].upper(), idx + 1)
             elif jdx == 2:
-                col = str(random.choice([1, 2, 3, 4, 5]))
+                item["score"] = random.choice([1, 2, 3, 4, 5])
             else:
-                col = "_"
-            cols.append(col)
+                item["etc"] = ""
 
-        rows.append("\t".join(cols))
+        datalist.append(item)
 
-    open(fname, "w").write("\n".join(rows))
+    jstr = json.dumps(datalist, indent=2)
+    open(fname, "w").write(jstr)
 
     return 0
 
-def load_data(fname):
-    datalist = []
+def stat(fname):
+    import math
+    import json
 
     text = open(fname).read()
-    for line in text.split("\n"):
-        tabs = line.split("\t")
-        item = {
-            "no":tabs[0],
-            "name":tabs[1],
-            "score":int(tabs[2]),
-            "etc":tabs[3]
-        }
-        datalist.append(item)
 
-    return datalist
+    datalist = json.loads(text)
 
-def main():
-    import math
+    if not datalist:
+        return
 
-    fname = "data.txt"
-
-    generate_data(fname)
-
-    datalist = load_data(fname)
+    #print(datalist)
 
     nums = [item["score"] for item in datalist]
     _sum = sum(nums)
@@ -63,6 +54,15 @@ def main():
 
     print("sum[%d]:%d, avg:%.2f, var:%.2f, dev:%.2f" % (count, _sum, avg, var, dev))
 
+
+def main():
+    flag = 2
+    fname = "data.json"
+
+    if flag == 1:
+        stat(fname)
+    else:
+        generate_data(fname)
 
 main()
 
