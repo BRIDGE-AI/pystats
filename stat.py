@@ -25,6 +25,22 @@ def generate_data(fname):
 
     return 0
 
+def load_data(fname):
+    datalist = []
+
+    text = open(fname).read()
+    for line in text.split("\n"):
+        tabs = line.split("\t")
+        item = {
+            "no":tabs[0],
+            "name":tabs[1],
+            "score":int(tabs[2]),
+            "etc":tabs[3]
+        }
+        datalist.append(item)
+
+    return datalist
+
 def main():
     import math
 
@@ -32,10 +48,9 @@ def main():
 
     generate_data(fname)
 
-    text = open(fname).read()
-    print(text)
+    datalist = load_data(fname)
 
-    nums = [int(line.split("\t")[2]) for line in text.split("\n")]
+    nums = [item["score"] for item in datalist]
     _sum = sum(nums)
     count = len(nums)
     avg = _sum / count
