@@ -6,6 +6,9 @@ def generate_data(fname):
     import random
     import json
 
+    # adds 'Gender' and 'Year'
+    # calc stats by Gender/Year
+    # compare the preference for the item by Gender/Year
     labels = ["No", "Name", "Score", "ETC."]
 
     datalist = []
