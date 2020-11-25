@@ -9,18 +9,22 @@ def generate_data(fname):
     # adds 'Gender' and 'Year'
     # calc stats by Gender/Year
     # compare the preference for the item by Gender/Year
-    labels = ["No", "Name", "Score", "ETC."]
+    labels = ["No", "Name", "Score", "Gender", "Year", "ETC."]
 
     datalist = []
     for idx in range(MaxItems):
         item = {}
         for jdx in range(len(labels)):
-            if jdx == 0:
+            if labels[jdx].lower() == "no":
                 item["no"] = "%s%d" % (labels[jdx].lower(), idx + 1)
-            elif jdx == 1:
+            elif labels[jdx].lower() == "name":
                 item["name"] = "%s%d" % (labels[jdx].upper(), idx + 1)
-            elif jdx == 2:
+            elif labels[jdx].lower() == "score":
                 item["score"] = random.choice([1, 2, 3, 4, 5])
+            elif labels[jdx].lower() == "gender":
+                item["gender"] = random.choice(["m", "f"])
+            elif labels[jdx].lower() == "year":
+                item["year"] = random.randint(1970, 2020)
             else:
                 item["etc"] = ""
 
@@ -40,26 +44,47 @@ def stat(fname):
     datalist = json.loads(text)
 
     if not datalist:
+        print("no data loaded")
         return
 
     #print(datalist)
 
-    nums = [item["score"] for item in datalist]
-    _sum = sum(nums)
-    count = len(nums)
-    avg = _sum / count
+    _sum = {}
+    _cnt = {}
+    for item in datalist:
+        if item["year"] not in _sum:
+            _sum[item["year"]] = 0
+            _cnt[item["year"]] = 0
 
-    _sum2 = sum([num ** 2 for num in nums])
-    var = _sum2 / count - avg ** 2
-    dev = math.sqrt(var)
+        _sum[item["year"]] += item["score"]
+        _cnt[item["year"]] += 1
 
-    #var, dev = calc_var(count, avg, nums)
+    #print(_sum)
+    #print(_cnt)
 
-    print("sum[%d]:%d, avg:%.2f, var:%.2f, dev:%.2f" % (count, _sum, avg, var, dev))
+    _merge = {}
+    for key in _sum:
+        #print("key:%d, val:%d" % (key, _sum[key]))
+        avg = _sum[key] / _cnt[key]
 
+        _merge[key] = {
+            "year":key,
+            "sum":_sum[key],
+            "cnt":_cnt[key],
+            "avg":avg
+        }
+
+    open("out.json", "w").write(json.dumps(_merge, indent=4))
+    #print(_merge)
+    #print("sum[%d]:%d, avg:%.2f, var:%.2f, dev:%.2f" % (count, _sum, avg, var, dev))
+
+    print("YEAR\tAVG(SCORE)")
+    keys = sorted(_merge.keys(), reverse=True)
+    for key in keys:
+        print("%d\t%f" % (_merge[key]["year"], _merge[key]["avg"]))
 
 def main():
-    flag = 2
+    flag = 1
     fname = "data.json"
 
     if flag == 1:
