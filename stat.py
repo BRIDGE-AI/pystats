@@ -49,28 +49,33 @@ def stat(fname):
 
     #print(datalist)
 
-    _sum = {}
-    _cnt = {}
+    _stat = {}
     for item in datalist:
-        if item["year"] not in _sum:
-            _sum[item["year"]] = 0
-            _cnt[item["year"]] = 0
+        key = "%d-%s" % (item["year"], item["gender"])
+        if key not in _stat:
+            _stat[key] = {
+                "sum":0,
+                "cnt":0,
+            }
 
-        _sum[item["year"]] += item["score"]
-        _cnt[item["year"]] += 1
+        _stat[key]["sum"] += item["score"]
+        _stat[key]["cnt"] += 1
+
+    print(json.dumps(_stat, indent=2))
+    open("tmp.json", "w").write(json.dumps(_stat, indent=4))
 
     #print(_sum)
     #print(_cnt)
 
     _merge = {}
-    for key in _sum:
+    for key in _stat:
         #print("key:%d, val:%d" % (key, _sum[key]))
-        avg = _sum[key] / _cnt[key]
+        avg = _stat[key]["sum"] / _stat[key]["cnt"]
 
         _merge[key] = {
             "year":key,
-            "sum":_sum[key],
-            "cnt":_cnt[key],
+            "sum":_stat[key]["sum"],
+            "cnt":_stat[key]["cnt"],
             "avg":avg
         }
 
@@ -81,7 +86,7 @@ def stat(fname):
     print("YEAR\tAVG(SCORE)")
     keys = sorted(_merge.keys(), reverse=True)
     for key in keys:
-        print("%d\t%f" % (_merge[key]["year"], _merge[key]["avg"]))
+        print("%s\t%f" % (_merge[key]["year"], _merge[key]["avg"]))
 
 def main():
     flag = 1
