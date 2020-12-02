@@ -35,26 +35,13 @@ def generate_data(fname):
 
     return 0
 
-def stat(fname):
-    import math
-    import json
-
-    text = open(fname).read()
-
-    datalist = json.loads(text)
-
-    if not datalist:
-        print("no data loaded")
-        return
-
-    #print(datalist)
-
+def calc_stat(datalist):
     _stat = {}
     for item in datalist:
-        key = item["year"]
+        year = item["year"]
 
-        if key not in _stat:
-            _stat[key] = {
+        if year not in _stat:
+            _stat[year] = {
                 "m":{
                     "sum":0,
                     "cnt":0,
@@ -66,16 +53,14 @@ def stat(fname):
             }
 
         gen = item["gender"]
-        _stat[key][gen]["sum"] += item["score"]
-        _stat[key][gen]["cnt"] += 1
+        _stat[year][gen]["sum"] += item["score"]
+        _stat[year][gen]["cnt"] += 1
 
-    #print(json.dumps(_stat, indent=2))
-    open("tmp.json", "w").write(json.dumps(_stat, indent=4))
+    return _stat
 
-    #print(_sum)
-    #print(_cnt)
-
+def __merge(_stat):
     _merge = {}
+
     for key in _stat:
         #print("key:%d, val:%d" % (key, _sum[key]))
         avg_m = _stat[key]["m"]["sum"] / _stat[key]["m"]["cnt"]
@@ -96,9 +81,24 @@ def stat(fname):
             }
         }
 
+    return _merge
+
+def stat(fname):
+    import math
+    import json
+
+    text = open(fname).read()
+    datalist = json.loads(text)
+
+    if not datalist:
+        print("no data loaded")
+        return
+
+    _stat = calc_stat(datalist)
+
+    _merge = __merge(_stat)
+
     open("out.json", "w").write(json.dumps(_merge, indent=4))
-    #print(_merge)
-    #print("sum[%d]:%d, avg:%.2f, var:%.2f, dev:%.2f" % (count, _sum, avg, var, dev))
 
     print("YEAR\tM-AVG(SCORE)\tF-AVG(SCORE)")
     keys = sorted(_merge.keys(), reverse=True)
