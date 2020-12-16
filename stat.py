@@ -83,6 +83,27 @@ def __merge(_stat):
 
     return _merge
 
+def plot(data):
+    import matplotlib.pyplot as plt
+
+    x = sorted([item["m"]["year"] for year, item in data.items()])
+
+    fig, ax = plt.subplots()
+
+    ax.set_ylim([0.8, 5.2])
+
+    # Using set_dashes() to modify dashing of an existing line
+    y = [data[key]["m"]["avg"] for key in sorted(x)]
+    line1, = ax.plot(x, y, label='MALE')
+    #line1.set_dashes([2, 2, 10, 2])  # 2pt line, 2pt break, 10pt line, 2pt break
+
+    # Using plot(..., dashes=...) to set the dashing when creating a line
+    y = [data[key]["f"]["avg"] for key in sorted(data.keys())]
+    line2, = ax.plot(x, y, label='FEMALE')
+
+    ax.legend()
+    plt.show()
+
 def stat(fname):
     import math
     import json
@@ -100,10 +121,14 @@ def stat(fname):
 
     open("out.json", "w").write(json.dumps(_merge, indent=4))
 
+    """
     print("YEAR\tM-AVG(SCORE)\tF-AVG(SCORE)")
     keys = sorted(_merge.keys(), reverse=True)
     for key in keys:
         print("%d\t%f\t%f" % (_merge[key]["f"]["year"], _merge[key]["m"]["avg"], _merge[key]["f"]["avg"]))
+    """
+
+    plot(_merge)
 
 def main():
     flag = 1
