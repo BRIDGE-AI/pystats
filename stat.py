@@ -45,16 +45,19 @@ def calc_stat(datalist):
                 "m":{
                     "sum":0,
                     "cnt":0,
+                    "sum2":0,
                 },
                 "f":{
                     "sum":0,
                     "cnt":0,
+                    "sum2":0,
                 }
             }
 
         gen = item["gender"]
         _stat[year][gen]["sum"] += item["score"]
         _stat[year][gen]["cnt"] += 1
+        _stat[year][gen]["sum2"] += item["score"] ** 2
 
     return _stat
 
@@ -66,18 +69,23 @@ def __merge(_stat):
         avg_m = _stat[key]["m"]["sum"] / _stat[key]["m"]["cnt"]
         avg_f = _stat[key]["f"]["sum"] / _stat[key]["f"]["cnt"]
 
+        dev_m = _stat[key]["m"]["sum2"] / _stat[key]["m"]["cnt"] - avg_m ** 2
+        dev_f = _stat[key]["f"]["sum2"] / _stat[key]["f"]["cnt"] - avg_f ** 2
+
         _merge[key] = {
             "m":{
                 "year":key,
                 "sum":_stat[key]["m"]["sum"],
                 "cnt":_stat[key]["m"]["cnt"],
-                "avg":avg_m
+                "avg":avg_m,
+                "var":dev_m,
             },
             "f":{
                 "year":key,
                 "sum":_stat[key]["f"]["sum"],
                 "cnt":_stat[key]["f"]["cnt"],
-                "avg":avg_f
+                "avg":avg_f,
+                "var":dev_f,
             }
         }
 
@@ -88,20 +96,27 @@ def plot(data):
 
     x = sorted([item["m"]["year"] for year, item in data.items()])
 
-    fig, ax = plt.subplots()
+    fig1, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
 
-    ax.set_ylim([0.8, 5.2])
+    ax1.set_ylim([0.8, 5.2])
+    ax2.set_ylim([0.8, 5.2])
 
-    # Using set_dashes() to modify dashing of an existing line
     y = [data[key]["m"]["avg"] for key in sorted(x)]
-    line1, = ax.plot(x, y, label='MALE')
+    yerr = [data[key]["m"]["var"] ** 0.5 for key in sorted(x)]
+
+    line1, = ax1.plot(x, y, c=(0.5, 0.5, 0.8), label='MALE')
+    ax1.errorbar(x, y, yerr=yerr, label='MALE')
+    #ax1.fill_between(x, [y + err for (y, err) in zip(y, yerr)], [y - err for (y, err) in zip(y, yerr)], color='gray', alpha=0.2)
     #line1.set_dashes([2, 2, 10, 2])  # 2pt line, 2pt break, 10pt line, 2pt break
 
     # Using plot(..., dashes=...) to set the dashing when creating a line
     y = [data[key]["f"]["avg"] for key in sorted(data.keys())]
-    line2, = ax.plot(x, y, label='FEMALE')
+    yerr = [data[key]["f"]["var"] ** 0.5 for key in sorted(x)]
+    #line2, = ax.plot(x, y, label='FEMALE')
+    ax2.errorbar(x, y, c=(0.8, 0.5, 0.5), yerr=yerr, label='FEMALE')
 
-    ax.legend()
+    ax1.legend()
+    ax2.legend()
     plt.show()
 
 def stat(fname):
